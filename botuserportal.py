@@ -57,8 +57,8 @@ class MyBot(FSMContext,StatesGroup):
         price_button = KeyboardButton('/price 📠')
         info_button = KeyboardButton('/info 📊')
         pay_button = KeyboardButton('/reg 💵')
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-        keyboard.add(help_button, price_button, info_button, pay_button)
+        main_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+        main_keyboard.add(help_button, price_button, info_button, pay_button)
         #элементы клавиатуры (не к регистрации) инлайн
         inline_btn_intimeworkshop = InlineKeyboardButton('текущие мероприятия', callback_data='intime')
         inline_btn_lasttimeworkshop = InlineKeyboardButton('прошедшие мероприятия', callback_data='lastime')
@@ -68,19 +68,24 @@ class MyBot(FSMContext,StatesGroup):
 
         inline_keyboard_for_infoevents = InlineKeyboardMarkup().add(inline_btn_infoevent1)
         inline_keyboard_for_infoevents.add(InlineKeyboardButton('ссылка для оплаты мероприятия выше👆', url='https://www.tinkoff.ru/'))
-
+        inline_keyboard_portfolio = InlineKeyboardMarkup()
+        inline_keyboard_portfolio.add(InlineKeyboardButton('ссылка на сайт студии А3', url='https://interior-kzn.ru'))
         #команды
         @self.dp.message_handler(commands=['start'])
         async def hello(message: types.message):
             await message.answer('привет напиши /help что бы узнать список команд')
 
+        @self.dp.message_handler(commands=['menu'])
+        async def hello(message: types.message):
+            await message.answer('снизу показанно меню', reply_markup=main_keyboard)
+
         @self.dp.message_handler(commands=['help'])
         async def hello(message: types.message):
-            await message.answer('что умеет этот бот???\n/price - цены и информация о занятиях и группе\n/info - о нас \n если вы нашли ошибку просто очистие час с ботом и все!', reply_markup=keyboard)
+            await message.answer('что умеет этот бот???\n/price - цены и информация о занятиях и группе\n/info - о нас \n/reg - зарегестрироваться на меропрятие\n если вы нашли ошибку просто очистие час с ботом и все!', reply_markup=main_keyboard)
 
         @self.dp.message_handler(commands=['price'])
         async def hello(message: types.message):
-            await message.answer('Здравствуйте , выберите  какие конкретно мероприятия вас интересуют: ', reply_markup=inline_keyboard_for_events)
+            await message.answer('Здравствуйте , выберите какие мероприятия вас интересуют: ', reply_markup=inline_keyboard_for_events)
 
         @self.dp.callback_query_handler(lambda c: c.data == 'intime')
         async def process_callback_button1(callback_query: types.CallbackQuery):
@@ -89,7 +94,7 @@ class MyBot(FSMContext,StatesGroup):
 
         @self.dp.callback_query_handler(lambda c: c.data == 'infoevent1')
         async def process_button5_callback(callback_query: types.CallbackQuery):
-            await callback_query.answer(text='это матстер класс по росписе шоперов хз что говорить еще)')
+            await callback_query.answer(text='это мастер класс по росписе шоперов. На нем дети смогут научиться росписывать шоперы и показать родителям новые удобные сумки.')
 
         @self.dp.callback_query_handler(lambda c: c.data == 'lastime')
         async def process_callback_button1(callback_query: types.CallbackQuery):
@@ -98,11 +103,10 @@ class MyBot(FSMContext,StatesGroup):
 
         @self.dp.message_handler(commands=['info'])
         async def hello(message: types.message):
-            await message.answer('', reply_markup=keyboard)
+            await message.answer('мы студия дизайна А3 наш опыт работы составляет более 10 лет\nнаши проекты можно увидеть на нашем сайте', reply_markup=inline_keyboard_portfolio)
 
         #функция для регистрации
     def register(self):
-
         # Инициализируем клавиатуру
         keyboard = ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
         button = KeyboardButton('нет ответа, перейти на следующий вопрос')
@@ -144,7 +148,7 @@ class MyBot(FSMContext,StatesGroup):
             async with state.proxy() as data:
                 data['age'] = message.text
             await MyBot.ENTER_PAYMENT.set()
-            await message.answer('Прошла ли у вас оплата ?', reply_markup=keyboard)
+            await message.answer('Ведите ФИ чтобв ы проверить была ли оплата', reply_markup=keyboard)
 
         @self.dp.message_handler(state=MyBot.ENTER_PAYMENT)
         async def process_payment(message: Message, state: FSMContext):
@@ -175,9 +179,7 @@ class MyBot(FSMContext,StatesGroup):
                 conn.close()                 
                 print("человек завершил регистрацию!время :",time.ctime())
             await state.finish()
-        @self.dp.message_handler(commands=['menu'])
-        async def hello(message: types.message):
-            await message.answer('/price\n/info\n/pay\n если вы нашли ошибку просто очистие час с ботом и все!', reply_markup=keyboard)
+
 #запуск сервера
         executor.start_polling(self.dp, skip_updates=True)
 #старт сервера

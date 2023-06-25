@@ -82,7 +82,7 @@ class MyBot:
             mes = mes.replace("/sending📨","")
             mes = mes.replace("/sending","")
             await message.answer('📨старт рассылки📨', reply_markup=keyboard)
-            await self.dp.bot.send_message(chat_id='1733251767', text=mes)#1001989620505    
+            await self.dp.bot.send_message(chat_id='1001989620505', text=mes)#1001989620505    
             print('начан старт рассылки по id 1001989620505 время :',time.ctime())
             
 #запуск сервера
