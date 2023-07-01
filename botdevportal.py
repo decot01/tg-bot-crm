@@ -17,7 +17,7 @@ import time
 class MyBot:
     #инициализация бота
     def __init__(self):
-        self._TOKEN = '5759536990:AAGisVBTSrScFeECXF-0mq6MuenGAuxEPuo'#токен
+        self._TOKEN = 'token'#токен
         self.bot = Bot(self._TOKEN)
         self.dp = Dispatcher(bot=self.bot, storage=MemoryStorage())
         self.memory = MemoryStorage()
@@ -82,8 +82,8 @@ class MyBot:
             mes = mes.replace("/sending📨","")
             mes = mes.replace("/sending","")
             await message.answer('📨старт рассылки📨', reply_markup=keyboard)
-            await self.dp.bot.send_message(chat_id='1001989620505', text=mes)#1001989620505    
-            print('начан старт рассылки по id 1001989620505 время :',time.ctime())
+            await self.dp.bot.send_message(chat_id='tg chanel id', text=mes)#1001989620505    
+            print(f'начан старт рассылки по {chat_id} время :',time.ctime())
             
 #запуск сервера
         executor.start_polling(self.dp, skip_updates=True)
